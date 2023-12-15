@@ -1,0 +1,57 @@
+@page
+@using Acme.BookStore.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Acme.BookStore.Web.Pages.Books.Book
+@using Acme.BookStore.Localization
+@using Acme.BookStore.Web.Menus
+@model IndexModel
+@inject IPageLayout PageLayout
+@inject IHtmlLocalizer<BookStoreResource> L
+@inject IAuthorizationService Authorization
+@{
+    PageLayout.Content.Title = L["Book"].Value;
+    PageLayout.Content.BreadCrumb.Add(L["Menu:Book"].Value);
+    PageLayout.Content.MenuItemName = BookStoreMenus.Book;
+}
+
+@section scripts
+{
+    <abp-script src="/Pages/Books/Book/index.js" />
+}
+@section styles
+{
+    <abp-style src="/Pages/Books/Book/index.css"/>
+}
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["Book"]</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+			    @if (await Authorization.IsGrantedAsync(BookStorePermissions.Book.Create))
+                {
+                <abp-button id="NewBookButton"
+                            text="@L["CreateBook"].Value"
+                            icon="plus"
+                            button-type="Primary" />
+                }
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body>
+        <abp-row class="mb-3">
+            <a abp-collapse-id="BookCollapse" class="text-secondary">@L["TableFilter"] </a>
+        </abp-row>
+        <abp-dynamic-form abp-model="BookFilter" id="BookFilter" required-symbols="false" column-size="_3">
+            <abp-collapse-body id="BookCollapse">
+                <abp-form-content />
+            </abp-collapse-body>
+        </abp-dynamic-form>
+        <hr />
+        <abp-table striped-rows="true" id="BookTable" class="nowrap"/>
+    </abp-card-body>
+</abp-card>
